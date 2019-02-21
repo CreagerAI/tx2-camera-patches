@@ -1,0 +1,806 @@
+diff -Naur hardware/nvidia/platform/t18x/common/kernel-dts/t18x-common-modules/tegra186-camera-imx274-a00.dtsi hardware_new/nvidia/platform/t18x/common/kernel-dts/t18x-common-modules/tegra186-camera-imx274-a00.dtsi
+--- hardware/nvidia/platform/t18x/common/kernel-dts/t18x-common-modules/tegra186-camera-imx274-a00.dtsi	2018-03-01 20:37:24.000000000 -0800
++++ hardware_new/nvidia/platform/t18x/common/kernel-dts/t18x-common-modules/tegra186-camera-imx274-a00.dtsi	2018-04-18 15:18:36.847891648 -0700
+@@ -18,7 +18,7 @@
+ / {
+ 	host1x {
+ 		vi@15700000 {
+-			num-channels = <1>;
++			num-channels = <3>;
+ 			ports {
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+@@ -30,11 +30,27 @@
+ 						remote-endpoint = <&liimx274_csi_out0>;
+ 					};
+ 				};
++				port@1 {
++					reg = <1>;
++					liimx274_vi_in1: endpoint {
++						csi-port = <2>;
++						bus-width = <4>;
++						remote-endpoint = <&liimx274_csi_out1>;
++					};
++				};
++				port@2 {
++					reg = <2>;
++					liimx274_vi_in2: endpoint {
++						csi-port = <4>;
++						bus-width = <4>;
++						remote-endpoint = <&liimx274_csi_out2>;
++					};
++				};
+ 			};
+ 		};
+ 
+ 		nvcsi@150c0000 {
+-			num-channels = <1>;
++			num-channels = <3>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			channel@0 {
+@@ -58,6 +74,48 @@
+ 					};
+ 				};
+ 			};
++			channel@1 {
++				reg = <1>;
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					port@0 {
++						reg = <0>;
++						liimx274_csi_in1: endpoint@0 {
++							csi-port = <2>;
++							bus-width = <4>;
++							remote-endpoint = <&liimx274_imx274_out1>;
++						};
++					};
++					port@1 {
++						reg = <1>;
++						liimx274_csi_out1: endpoint@1 {
++							remote-endpoint = <&liimx274_vi_in1>;
++						};
++					};
++				};
++			};
++			channel@2 {
++				reg = <2>;
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					port@0 {
++						reg = <0>;
++						liimx274_csi_in2: endpoint@0 {
++							csi-port = <4>;
++							bus-width = <4>;
++							remote-endpoint = <&liimx274_imx274_out2>;
++						};
++					};
++					port@1 {
++						reg = <1>;
++						liimx274_csi_out2: endpoint@1 {
++							remote-endpoint = <&liimx274_vi_in2>;
++						};
++					};
++				};
++			};
+ 		};
+ 	};
+ 
+@@ -76,7 +134,6 @@
+ 			physical_w = "3.674";
+ 			physical_h = "2.738";
+ 
+-			sensor_model = "imx274";
+ 
+ 			/* Define any required hw resources needed by driver */
+ 			/* ie. clocks, io pins, power sources */
+@@ -182,22 +239,22 @@
+ 					active_h = "2160";
+ 					pixel_t = "bayer_rggb";
+ 					readout_orientation = "90";
+-					line_length = "4208";
++					line_length = "4200";
+ 					inherent_gain = "1";
+-					mclk_multiplier = "24";
+-					pix_clk_hz = "576000000";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
+ 
+ 					min_gain_val = "1.0";
+-					max_gain_val = "22.2";
++					max_gain_val = "180";
+ 					min_hdr_ratio = "1";
+-					max_hdr_ratio = "1";
+-					min_framerate = "1.5";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
+ 					max_framerate = "60";
+-					min_exp_time = "44";
+-					max_exp_time = "666637";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
+ 					embedded_metadata_height = "1";
+ 				};
+-				mode1 { // IMX274_MODE_1920X1080
++				mode1 { // IMX274_MODE_3840X2160
+ 					mclk_khz = "24000";
+ 					num_lanes = "4";
+ 					tegra_sinterface = "serial_a";
+@@ -209,19 +266,73 @@
+ 					active_h = "1080";
+ 					pixel_t = "bayer_rggb";
+ 					readout_orientation = "90";
+-					line_length = "4160";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "60";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				mode2 { // IMX274_MODE_1280X720
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_a";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "1280";
++					active_h = "720";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
+ 					inherent_gain = "1";
+-					mclk_multiplier = "24";
+-					pix_clk_hz = "576000000";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
+ 
+ 					min_gain_val = "1.0";
+-					max_gain_val = "22.2";
++					max_gain_val = "180";
+ 					min_hdr_ratio = "1";
+-					max_hdr_ratio = "1";
+-					min_framerate = "1.5";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
+ 					max_framerate = "60";
+-					min_exp_time = "58";
+-					max_exp_time = "184611";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				mode3 { // IMX274_MODE_1280X540
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_a";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "1280";
++					active_h = "540";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "240";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
+ 					embedded_metadata_height = "1";
+ 				};
+ 				ports {
+@@ -238,6 +349,462 @@
+ 					};
+ 				};
+ 			};
++			i2c@1 {
++			imx274_c@1a {
++			compatible = "nvidia,imx274";
++			/* I2C device address */
++			reg = <0x1a>;
++
++			/* V4L2 device node location */
++			devnode = "video1";
++
++			/* Physical dimensions of sensor */
++			physical_w = "3.674";
++			physical_h = "2.738";
++
++
++			/* Define any required hw resources needed by driver */
++			/* ie. clocks, io pins, power sources */
++			avdd-reg = "vana";
++			iovdd-reg = "vif";
++			dvdd-reg = "vdig";
++
++			/* Defines number of frames to be dropped by driver internally after applying */
++			/* sensor crop settings. Some sensors send corrupt frames after applying */
++			/* crop co-ordinates */
++			/*post_crop_frame_drop = "0";*/
++
++			/* if true, delay gain setting by one frame to be in sync with exposure */
++			delayed_gain = "true";
++
++			/**
++			* A modeX node is required to support v4l2 driver
++			* implementation with NVIDIA camera software stack
++			*
++			* mclk_khz = "";
++			* Standard MIPI driving clock, typically 24MHz
++			*
++			* num_lanes = "";
++			* Number of lane channels sensor is programmed to output
++			*
++			* tegra_sinterface = "";
++			* The base tegra serial interface lanes are connected to
++			*
++			* discontinuous_clk = "";
++			* The sensor is programmed to use a discontinuous clock on MIPI lanes
++			*
++			* dpcm_enable = "true";
++			* The sensor is programmed to use a DPCM modes
++			*
++			* cil_settletime = "";
++			* MIPI lane settle time value.
++			* A "0" value attempts to autocalibrate based on mclk_multiplier
++			*
++			*
++			*
++			*
++			* active_w = "";
++			* Pixel active region width
++			*
++			* active_h = "";
++			* Pixel active region height
++			*
++			* pixel_t = "";
++			* The sensor readout pixel pattern
++			*
++			* readout_orientation = "0";
++			* Based on camera module orientation.
++			* Only change readout_orientation if you specifically
++			* Program a different readout order for this mode
++			*
++			* line_length = "";
++			* Pixel line length (width) for sensor mode.
++			* This is used to calibrate features in our camera stack.
++			*
++			* mclk_multiplier = "";
++			* Multiplier to MCLK to help time hardware capture sequence
++			* TODO: Assign to PLL_Multiplier as well until fixed in core
++			*
++			* pix_clk_hz = "";
++			* Sensor pixel clock used for calculations like exposure and framerate
++			*
++			*
++			*
++			*
++			* inherent_gain = "";
++			* Gain obtained inherently from mode (ie. pixel binning)
++			*
++			* min_gain_val = ""; (floor to 6 decimal places)
++			* max_gain_val = ""; (floor to 6 decimal places)
++			* Gain limits for mode
++			*
++			* min_exp_time = ""; (ceil to integer)
++			* max_exp_time = ""; (ceil to integer)
++			* Exposure Time limits for mode (us)
++			*
++			*
++			* min_hdr_ratio = "";
++			* max_hdr_ratio = "";
++			* HDR Ratio limits for mode
++			*
++			* min_framerate = "";
++			* max_framerate = "";
++			* Framerate limits for mode (fps)
++			*
++			* embedded_metadata_height = "";
++			* Sensor embedded metadata height in units of rows.
++			* If sensor does not support embedded metadata value should be 0.
++			*/
++				mode0 { // IMX274_MODE_3840X2160
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_c";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "3840";
++					active_h = "2160";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "60";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				mode1 { // IMX274_MODE_3840X2160
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_c";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "1920";
++					active_h = "1080";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "60";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				mode2 { // IMX274_MODE_1280X720
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_c";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "1280";
++					active_h = "720";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "60";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				mode3 { // IMX274_MODE_1280X540
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_c";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "1280";
++					active_h = "540";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "240";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					port@0 {
++						reg = <0>;
++						liimx274_imx274_out1: endpoint {
++							csi-port = <2>;
++							bus-width = <4>;
++							remote-endpoint = <&liimx274_csi_in1>;
++							};
++						};
++					};
++				};
++			};
++			i2c@2 {
++			imx274_e@1a {
++			compatible = "nvidia,imx274";
++			/* I2C device address */
++			reg = <0x1a>;
++
++			/* V4L2 device node location */
++			devnode = "video2";
++
++			/* Physical dimensions of sensor */
++			physical_w = "3.674";
++			physical_h = "2.738";
++
++
++			/* Define any required hw resources needed by driver */
++			/* ie. clocks, io pins, power sources */
++			avdd-reg = "vana";
++			iovdd-reg = "vif";
++			dvdd-reg = "vdig";
++
++			/* Defines number of frames to be dropped by driver internally after applying */
++			/* sensor crop settings. Some sensors send corrupt frames after applying */
++			/* crop co-ordinates */
++			/*post_crop_frame_drop = "0";*/
++
++			/* if true, delay gain setting by one frame to be in sync with exposure */
++			delayed_gain = "true";
++
++			/**
++			* A modeX node is required to support v4l2 driver
++			* implementation with NVIDIA camera software stack
++			*
++			* mclk_khz = "";
++			* Standard MIPI driving clock, typically 24MHz
++			*
++			* num_lanes = "";
++			* Number of lane channels sensor is programmed to output
++			*
++			* tegra_sinterface = "";
++			* The base tegra serial interface lanes are connected to
++			*
++			* discontinuous_clk = "";
++			* The sensor is programmed to use a discontinuous clock on MIPI lanes
++			*
++			* dpcm_enable = "true";
++			* The sensor is programmed to use a DPCM modes
++			*
++			* cil_settletime = "";
++			* MIPI lane settle time value.
++			* A "0" value attempts to autocalibrate based on mclk_multiplier
++			*
++			*
++			*
++			*
++			* active_w = "";
++			* Pixel active region width
++			*
++			* active_h = "";
++			* Pixel active region height
++			*
++			* pixel_t = "";
++			* The sensor readout pixel pattern
++			*
++			* readout_orientation = "0";
++			* Based on camera module orientation.
++			* Only change readout_orientation if you specifically
++			* Program a different readout order for this mode
++			*
++			* line_length = "";
++			* Pixel line length (width) for sensor mode.
++			* This is used to calibrate features in our camera stack.
++			*
++			* mclk_multiplier = "";
++			* Multiplier to MCLK to help time hardware capture sequence
++			* TODO: Assign to PLL_Multiplier as well until fixed in core
++			*
++			* pix_clk_hz = "";
++			* Sensor pixel clock used for calculations like exposure and framerate
++			*
++			*
++			*
++			*
++			* inherent_gain = "";
++			* Gain obtained inherently from mode (ie. pixel binning)
++			*
++			* min_gain_val = ""; (floor to 6 decimal places)
++			* max_gain_val = ""; (floor to 6 decimal places)
++			* Gain limits for mode
++			*
++			* min_exp_time = ""; (ceil to integer)
++			* max_exp_time = ""; (ceil to integer)
++			* Exposure Time limits for mode (us)
++			*
++			*
++			* min_hdr_ratio = "";
++			* max_hdr_ratio = "";
++			* HDR Ratio limits for mode
++			*
++			* min_framerate = "";
++			* max_framerate = "";
++			* Framerate limits for mode (fps)
++			*
++			* embedded_metadata_height = "";
++			* Sensor embedded metadata height in units of rows.
++			* If sensor does not support embedded metadata value should be 0.
++			*/
++				mode0 { // IMX274_MODE_3840X2160
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_e";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "3840";
++					active_h = "2160";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "60";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				mode1 { // IMX274_MODE_3840X2160
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_e";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "1920";
++					active_h = "1080";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "60";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				mode2 { // IMX274_MODE_1280X720
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_e";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "1280";
++					active_h = "720";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "60";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				mode3 { // IMX274_MODE_1280X540
++					mclk_khz = "24000";
++					num_lanes = "4";
++					tegra_sinterface = "serial_e";
++					discontinuous_clk = "yes";
++					dpcm_enable = "false";
++					cil_settletime = "0";
++
++					active_w = "1280";
++					active_h = "540";
++					pixel_t = "bayer_rggb";
++					readout_orientation = "90";
++					line_length = "4200";
++					inherent_gain = "1";
++					mclk_multiplier = "25";
++					pix_clk_hz = "756000000";
++
++					min_gain_val = "1.0";
++					max_gain_val = "180";
++					min_hdr_ratio = "1";
++					max_hdr_ratio = "64";
++					min_framerate = "1.462526";
++					max_framerate = "240";
++					min_exp_time = "16.165";
++					max_exp_time = "165770";
++					embedded_metadata_height = "1";
++				};
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					port@0 {
++						reg = <0>;
++						liimx274_imx274_out2: endpoint {
++							csi-port = <4>;
++							bus-width = <4>;
++							remote-endpoint = <&liimx274_csi_in2>;
++							};
++						};
++					};
++				};
++			};
+ 		};
+ 	};
+ 	lens_imx274@A6V26 {
+@@ -300,9 +867,9 @@
+ 		 * in the module's specsheet from the vender.
+ 		 */
+ 		modules {
+-			module0 {
+-				badge = "imx274_bottom_A6V26";
+-				position = "rear";
++			module2 {
++				badge = "imx274_center_A6V26";
++				position = "center";
+ 				orientation = "1";
+ 				drivernode0 {
+ 					/* Declare PCL support driver (classically known as guid)  */
+@@ -318,6 +885,32 @@
+ 					proc-device-tree = "/proc/device-tree/lens_imx274@A6V26/";
+ 				};
+ 			};
++			module1 {
++				badge = "imx274_front_A6V26";
++				position = "front";
++				orientation = "1";
++				drivernode0 {
++					/* Declare PCL support driver (classically known as guid)  */
++					pcl_id = "v4l2_sensor";
++					/* Driver v4l2 device name */
++					devname = "imx274 31-001a";
++					/* Declare the device-tree hierarchy to driver instance */
++					proc-device-tree = "/proc/device-tree/i2c@3180000/tca9546@70/i2c@1/imx274_c@1a";
++				};
++			};
++			module0 {
++				badge = "imx274_bottom_A6V26";
++				position = "bottom";
++				orientation = "1";
++				drivernode0 {
++					/* Declare PCL support driver (classically known as guid)  */
++					pcl_id = "v4l2_sensor";
++					/* Driver v4l2 device name */
++					devname = "imx274 32-001a";
++					/* Declare the device-tree hierarchy to driver instance */
++					proc-device-tree = "/proc/device-tree/i2c@3180000/tca9546@70/i2c@2/imx274_e@1a";
++				};
++			};
+ 		};
+ 	};
+ };
+diff -Naur hardware/nvidia/platform/t18x/common/kernel-dts/t18x-common-platforms/tegra186-quill-camera-imx274-a00.dtsi hardware_new/nvidia/platform/t18x/common/kernel-dts/t18x-common-platforms/tegra186-quill-camera-imx274-a00.dtsi
+--- hardware/nvidia/platform/t18x/common/kernel-dts/t18x-common-platforms/tegra186-quill-camera-imx274-a00.dtsi	2018-03-01 20:37:24.000000000 -0800
++++ hardware_new/nvidia/platform/t18x/common/kernel-dts/t18x-common-platforms/tegra186-quill-camera-imx274-a00.dtsi	2018-04-18 15:18:36.847891648 -0700
+@@ -63,6 +63,59 @@
+ 					vdig-supply = <&en_vdd_cam_1v2>;
+ 				};
+ 			};
++			i2c@1 {
++				reg = <1>;
++				i2c-mux,deselect-on-exit;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				pca9570_c@24 {
++					compatible = "nvidia,pca9570";
++					reg = <0x24>;
++					channel = "c";
++					drive_ic = "DRV8838";
++				};
++
++				imx274_c@1a {
++					/* Define any required hw resources needed by driver */
++					/* ie. clocks, io pins, power sources */
++					clocks = <&tegra_car TEGRA186_CLK_EXTPERIPH1>,
++									 <&tegra_car TEGRA186_CLK_PLLP_OUT0>;
++					clock-names = "extperiph1", "pllp_grtba";
++					mclk = "extperiph1";
++					reset-gpios = <&tegra_main_gpio CAM0_PWDN GPIO_ACTIVE_HIGH>;
++					vana-supply = <&en_vdd_cam_hv_2v8>;
++					vif-supply = <&en_vdd_cam>;
++					vdig-supply = <&en_vdd_cam_1v2>;
++				};
++			};
++			i2c@2 {
++				reg = <2>;
++				i2c-mux,deselect-on-exit;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				pca9570_e@24 {
++					compatible = "nvidia,pca9570";
++					reg = <0x24>;
++					channel = "e";
++					drive_ic = "DRV8838";
++				};
++
++				imx274_e@1a {
++					/* Define any required hw resources needed by driver */
++					/* ie. clocks, io pins, power sources */
++					clocks = <&tegra_car TEGRA186_CLK_EXTPERIPH1>,
++									 <&tegra_car TEGRA186_CLK_PLLP_OUT0>;
++					clock-names = "extperiph1", "pllp_grtba";
++					mclk = "extperiph1";
++					/*
++					reset-gpios = <&gpio_i2c_0_77 9 1>;
++					*/
++					reset-gpios = <&gpio_i2c_0_77 7 GPIO_ACTIVE_HIGH>;
++					vana-supply = <&en_vdd_cam_hv_2v8>;
++					vif-supply = <&en_vdd_cam>;
++					vdig-supply = <&en_vdd_cam_1v2>;
++				};
++			};
+ 		};
+ 	};
+ };
+diff -Naur hardware/nvidia/platform/t18x/quill/kernel-dts/tegra186-quill-p3310-1000-a00-00-base.dts hardware_new/nvidia/platform/t18x/quill/kernel-dts/tegra186-quill-p3310-1000-a00-00-base.dts
+--- hardware/nvidia/platform/t18x/quill/kernel-dts/tegra186-quill-p3310-1000-a00-00-base.dts	2018-03-01 20:37:24.000000000 -0800
++++ hardware_new/nvidia/platform/t18x/quill/kernel-dts/tegra186-quill-p3310-1000-a00-00-base.dts	2018-04-18 15:18:36.847891648 -0700
+@@ -15,7 +15,8 @@
+ 
+ #include <t18x-common-platforms/tegra186-quill-common-p3310-1000-a00.dtsi>
+ #include <t18x-common-platforms/tegra186-quill-power-tree-p3310-1000-a00-00.dtsi>
+-#include <t18x-common-platforms/tegra186-quill-camera-modules.dtsi>
++//#include <t18x-common-platforms/tegra186-quill-camera-modules.dtsi>
++#include "t18x-common-platforms/tegra186-quill-camera-imx274-a00.dtsi"
+ #include <t18x-common-modules/tegra186-display-e3320-1000-a00.dtsi>
+ 
+ /* comms dtsi file should be included after gpio dtsi file */
+@@ -24,7 +25,7 @@
+ #include <t18x-common-modules/tegra186-super-module-e2614-p2597-1000-a00.dtsi>
+ #include <t18x-common-plugin-manager/tegra186-quill-display-plugin-manager.dtsi>
+ #include <t18x-common-prod/tegra186-priv-quill-p3310-1000-a00-prod.dtsi>
+-#include <t18x-common-plugin-manager/tegra186-quill-camera-plugin-manager.dtsi>
++//#include <t18x-common-plugin-manager/tegra186-quill-camera-plugin-manager.dtsi>
+ 
+ #include <dt-bindings/linux/driver-info.h>
+ 
