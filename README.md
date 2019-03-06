@@ -3,7 +3,8 @@ Jetson TX2 Camera Patches Collection
 
 The imx274 patches are to be used with the nvidia source for kernel and hardware. 
 
-Brief Overview of steps:
+##Brief Overview of steps:
+
 1.) Download the source bundle from the Jetson Download Center
 
 2.) Unpack the "kernel" and "hardware" folders to /usr/src
@@ -19,4 +20,4 @@ Brief Overview of steps:
 
 The build output in /home/work can then be flashed with the ./flash.sh script found in the /Linux_for_Tegra folder (which can be downloaded from the Jetson Download Center).
 
-For detailed instructions, please refer to the Jetpack 3.3 L4T documentation provided by Nvidia.
+##For detailed instructions, please refer to the Jetpack 3.3 L4T documentation provided by Nvidia.
